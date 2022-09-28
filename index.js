@@ -4,8 +4,8 @@ const addDepartment = require('./utils/addDepartment.js');
 const addRole = require('./utils/addRole.js');
 const addEmployee = require('./utils/addEmployee.js');
 const mysql = require('mysql2');
-const { exit } = require('process');
-const { default: UI } = require('inquirer/lib/ui/baseUI.js');
+
+
 
 const db = mysql.createConnection(
   {
@@ -82,27 +82,25 @@ function init() {
         inquirer.prompt(department).then(
           async answers => {
             await fs.appendFile('schema/departmentSeed.sql', addDepartment(answers), err => err ? console.log(err) : console.log('Added Department'));
-            await init();
+             init();
           }
         )
       } else if (answers.menu === 'add a role') {
         inquirer.prompt(role).then(
           async answers => {
             await fs.appendFile('schema/roleSeed.sql', addRole(answers), err => err ? console.log(err) : console.log('Added Roles'));
-            await init();
+             init();
           }
         )
       } else if (answers.menu === 'add an employee') {
         inquirer.prompt(employee).then(
           async answers => {
-            await fs.appendFile('schema/employeeSeed.sql', addEmployee(answers), err => err ? console.log(err) : console.log('Added Roles'));
-            await init();
+            await fs.appendFile('schema/employeeSeed.sql', addEmployee(answers), err => err ? console.log(err) : console.log('Added Employee'));
+             init();
           }
         )
       } else {
-        if(inquirer.prompt) {
-          ui.close()
-        }
+        exit();
       };
     }
 
@@ -110,10 +108,10 @@ function init() {
 }
 
 // Exit the inquirer prompt
-/* function exit() {
+function exit() {
   prompt.ui.close();
 }
- */
+
 
 
 init();
