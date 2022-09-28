@@ -2,7 +2,11 @@ const inquirer = require('inquirer');
 const fs = require('fs');
 const addDepartment = require('./utils/addDepartment.js');
 const addRole = require('./utils/addRole.js');
+const addEmployee = require('./utils/addEmployee.js');
 const mysql = require('mysql2');
+const { exit } = require('process');
+const { default: UI } = require('inquirer/lib/ui/baseUI.js');
+
 const db = mysql.createConnection(
   {
     host: 'localhost',
@@ -45,6 +49,22 @@ const role = [
   }
 ]
 
+const employee = [
+  {
+    type: 'input',
+    message: 'What is the first name?',
+    name: 'first'
+  },
+  {
+    type: 'input',
+    message: 'What is the last name?',
+    name: 'last'
+  },
+  {
+
+  }
+]
+
 function init() {
   inquirer.prompt(menu).then(
     answers => {
@@ -72,10 +92,28 @@ function init() {
             await init();
           }
         )
-      }
+      } else if (answers.menu === 'add an employee') {
+        inquirer.prompt(employee).then(
+          async answers => {
+            await fs.appendFile('schema/employeeSeed.sql', addEmployee(answers), err => err ? console.log(err) : console.log('Added Roles'));
+            await init();
+          }
+        )
+      } else {
+        if(inquirer.prompt) {
+          ui.close()
+        }
+      };
     }
 
   )
 }
+
+// Exit the inquirer prompt
+/* function exit() {
+  prompt.ui.close();
+}
+ */
+
 
 init();
