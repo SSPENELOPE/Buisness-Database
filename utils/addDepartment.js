@@ -1,6 +1,6 @@
 function addDepartment(data) {
     return `
-    VALUES ('${data.department}'),`
+        ('${data.department}'),`
 };
 
 module.exports = addDepartment;
