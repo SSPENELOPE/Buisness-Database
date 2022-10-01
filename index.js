@@ -46,6 +46,11 @@ const role = [
     type: 'input',
     message: 'What is the salary of this role?',
     name: 'salary'
+  },
+  {
+    type: 'input',
+    message: 'What department does this role fall under?',
+    name: 'department'
   }
 ]
 
@@ -78,7 +83,7 @@ function init() {
           await console.table(results)
           init();
         });
-      } else if (answers.menu === 'view all roles') {
+      } else if (answers.menu === 'view all employees') {
         db.query('SELECT * FROM employee', async function (err, results) {
           await console.table(results)
           init();
