@@ -24,7 +24,7 @@ const menu = [
     type: 'list',
     message: 'What would you like to do?',
     name: 'menu',
-    choices: ['view all departments', 'view all roles', 'add a department', 'add a role', 'add an employee', 'update an employee role', 'exit']
+    choices: ['view all departments', 'view all roles', 'add a department', 'view all employees', 'add a role', 'add an employee', 'update an employee role', 'exit']
   }
 ];
 
@@ -69,33 +69,38 @@ function init() {
   inquirer.prompt(menu).then(
     answers => {
       if (answers.menu === 'view all departments') {
-        db.query('SELECT * FROM department', function (err, results) {
-          console.log(results)
+        db.query('SELECT * FROM department', async function (err, results) {
+          await console.table(results)
           init();
         });
       } else if (answers.menu === 'view all roles') {
-        db.query('SELECT * FROM role', function (err, results) {
-          console.log(results)
+        db.query('SELECT * FROM role', async function (err, results) {
+          await console.table(results)
           init();
         });
+      } else if (answers.menu === 'view all roles') {
+        db.query('SELECT * FROM employee', async function (err, results) {
+          await console.table(results)
+          init();
+        })
       } else if (answers.menu === 'add a department') {
         inquirer.prompt(department).then(
           async answers => {
-            await fs.appendFile('schema/departmentSeed.sql', addDepartment(answers), err => err ? console.log(err) : console.log('Added Department'));
+            await fs.appendFile('db/departmentSeed.sql', addDepartment(answers), err => err ? console.log(err) : console.log('Added Department'));
              init();
           }
         )
       } else if (answers.menu === 'add a role') {
         inquirer.prompt(role).then(
           async answers => {
-            await fs.appendFile('schema/roleSeed.sql', addRole(answers), err => err ? console.log(err) : console.log('Added Roles'));
+            await fs.appendFile('db/roleSeed.sql', addRole(answers), err => err ? console.log(err) : console.log('Added Role'));
              init();
           }
         )
       } else if (answers.menu === 'add an employee') {
         inquirer.prompt(employee).then(
           async answers => {
-            await fs.appendFile('schema/employeeSeed.sql', addEmployee(answers), err => err ? console.log(err) : console.log('Added Employee'));
+            await fs.appendFile('db/employeeSeed.sql', addEmployee(answers), err => err ? console.log(err) : console.log('Added Employee'));
              init();
           }
         )

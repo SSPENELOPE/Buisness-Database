@@ -1,2 +1,2 @@
-INSERT INTO employee (first_name, last_name) 
-VALUES ('Jim', 'Bob');
+INSERT INTO employee (first_name, last_name, role_id) 
+VALUES ('Jim', 'Bob', 1);

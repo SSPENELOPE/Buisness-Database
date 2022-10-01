@@ -1,3 +1,3 @@
-INSERT INTO role (title, salary)
-VALUES ('Placeholder', 10000),
-       ('Something', 20000);
+INSERT INTO role (title, salary, department_id)
+VALUES ('Placeholder', 10000, 1),
+       ('Something', 20000, 2);
