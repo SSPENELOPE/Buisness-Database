@@ -1,4 +1,4 @@
 INSERT INTO department (name)
-    VALUES ('Placeholder'),
-           ('something'),
+    VALUES ('other ppl'),
+           ('some ppl'),
            ('tech ppl');

@@ -1,8 +1,8 @@
 const inquirer = require('inquirer');
-const fs = require('fs');
+/* const fs = require('fs');
 const addDepartment = require('./utils/addDepartment.js');
 const addRole = require('./utils/addRole.js');
-const addEmployee = require('./utils/addEmployee.js');
+const addEmployee = require('./utils/addEmployee.js'); */
 const mysql = require('mysql2');
 
 
@@ -36,40 +36,6 @@ const department = [
   }
 ]
 
-const role = [
-  {
-    type: 'input',
-    message: 'What is name of the role?',
-    name: 'role'
-  },
-  {
-    type: 'input',
-    message: 'What is the salary of this role?',
-    name: 'salary'
-  },
-  {
-    type: 'input',
-    message: 'What department does this role fall under?',
-    name: 'department'
-  }
-]
-
-const employee = [
-  {
-    type: 'input',
-    message: 'What is the first name?',
-    name: 'first'
-  },
-  {
-    type: 'input',
-    message: 'What is the last name?',
-    name: 'last'
-  },
-  {
-
-  }
-]
-
 function init() {
   inquirer.prompt(menu).then(
     answers => {
@@ -79,7 +45,7 @@ function init() {
           init();
         });
       } else if (answers.menu === 'view all roles') {
-        db.query('SELECT * FROM role', async function (err, results) {
+        db.query('SELECT role.id, role.title, role.salary, department.name FROM role JOIN department ON role.department_id = department.id', async function (err, results) {
           await console.table(results)
           init();
         });
@@ -92,23 +58,65 @@ function init() {
         inquirer.prompt(department).then(
           async answers => {
             await fs.appendFile('db/departmentSeed.sql', addDepartment(answers), err => err ? console.log(err) : console.log('Added Department'));
-             init();
+            init();
           }
         )
       } else if (answers.menu === 'add a role') {
-        inquirer.prompt(role).then(
-          async answers => {
-            await fs.appendFile('db/roleSeed.sql', addRole(answers), err => err ? console.log(err) : console.log('Added Role'));
-             init();
-          }
-        )
+        db.query('SELECT id AS value, title AS name FROM department', function (err, results) {
+          inquirer.prompt([
+            {
+              type: 'input',
+              message: 'What is name of the role?',
+              name: 'role'
+            },
+            {
+              type: 'input',
+              message: 'What is the salary of this role?',
+              name: 'salary'
+            },
+            {
+              type: 'list',
+              choices: results,
+              message: 'What department id does this role fall under?',
+              name: 'department'
+            }
+          ]).then(
+             answers => {
+              db.query('INSERT INTO role (title, salary, department) VALUES (?, ?, ?)'[answers.role, answers.salary, answers.department], function (err, results) {
+                console.table(results);
+                init();
+              })
+            })
+        })
+
       } else if (answers.menu === 'add an employee') {
-        inquirer.prompt(employee).then(
-          async answers => {
-            await fs.appendFile('db/employeeSeed.sql', addEmployee(answers), err => err ? console.log(err) : console.log('Added Employee'));
-             init();
-          }
-        )
+        db.query('SELECT id AS value, title AS name FROM role', function (err, results) {
+          inquirer.prompt([
+            {
+              type: 'input',
+              message: 'What is the first name?',
+              name: 'first'
+            },
+            {
+              type: 'input',
+              message: 'What is the last name?',
+              name: 'last'
+            },
+            {
+              type: 'list',
+              choices: results,
+              message: 'what role does this employee fall under',
+              name: 'role_id'
+            }
+          ]).then(
+             answers => {
+
+              db.query('INSERT INTO employee (first_name, last_name, role_id) VALUES (?, ?, ?)', [answers.first, answers.last, answers.role_id], function (err, results) {
+                console.table(results)
+                init();
+              })
+            })
+        })
       } else {
         exit();
       };
