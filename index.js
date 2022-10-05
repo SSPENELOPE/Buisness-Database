@@ -90,7 +90,7 @@ function init() {
         })
 
       } else if (answers.menu === 'add an employee') {
-        db.query('SELECT id AS value, title AS name FROM role.id', function (err, results) {
+        db.query('SELECT id AS value, title AS name FROM role', function (err, results) {
           inquirer.prompt([
             {
               type: 'input',
