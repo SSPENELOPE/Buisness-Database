@@ -90,7 +90,7 @@ function init() {
         })
 
       } else if (answers.menu === 'add an employee') {
-        db.query('SELECT id AS value, title AS name FROM role', function (err, results) {
+        db.query('SELECT id AS value, title AS name FROM role.id', function (err, results) {
           inquirer.prompt([
             {
               type: 'input',
@@ -106,12 +106,12 @@ function init() {
               type: 'list',
               choices: results,
               message: 'what role does this employee fall under',
-              name: 'role_id'
+              name: 'role'
             }
           ]).then(
              answers => {
 
-              db.query('INSERT INTO employee (first_name, last_name, role_id) VALUES (?, ?, ?)', [answers.first, answers.last, answers.role_id], function (err, results) {
+              db.query('INSERT INTO employee (first_name, last_name, role_id) VALUES (?, ?, ?)', [answers.first, answers.last, answers.role], function (err, results) {
                 console.table(results)
                 init();
               })
