@@ -120,20 +120,46 @@ function init() {
             })
         })
       } else if (answers.menu === 'update an employee role') {
-        db.query('SELECT employee.id, employee.first_name, employee.last_name FROM employee JOIN role ON employee.role_id = role.id', function (err, results) {
+        db.query('SELECT * FROM employee', function (err, employees)  {
+          employees = employees.map((employee) => {
+            return {
+              name: `${employee.first_name} ${employee.last_name}`,
+              value: employee.id,
+            };
+          });
+          db.query('SELECT * FROM role', function (err, roles) {
+            roles = roles.map((role) => {
+              return {
+                name: role.title,
+                value: role.id,
+              };
+            })
+          });
+
           inquirer.prompt([
             {
               type: 'list',
-              choices: results,
+              choices: employees,
               message: 'Which employee gets a role change today?',
               name: 'update'
-            }
-          ]).then(
-
-            answers => {
-              if (answers) {
-                console.log(answers)
-              }
+            },
+            {
+              type: 'list',
+              choices: roles,
+              message: 'What is the employees new role?',
+              name: 'updateRole',
+            },
+          ])
+          .then((answers) => {
+           db.query('UPDATE employee SET ? WHERE ?'),
+           [
+            {
+              role_id: answers.updateRole,
+            },
+            {
+              id: answers.update,
+            },
+           ]
             }
           )
         })
