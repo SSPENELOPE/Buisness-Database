@@ -28,13 +28,6 @@ const menu = [
   }
 ];
 
-const department = [
-  {
-    type: 'input',
-    message: 'What is the name of you deparment?',
-    name: 'department'
-  }
-]
 
 function init() {
   inquirer.prompt(menu).then(
@@ -50,19 +43,27 @@ function init() {
           init();
         });
       } else if (answers.menu === 'view all employees') {
-        db.query('SELECT * FROM employee', async function (err, results) {
+        db.query('SELECT employee.id, employee.first_name, employee.last_name, role.title FROM employee JOIN role ON employee.role_id = role.id', async function (err, results) {
           await console.table(results)
           init();
         })
       } else if (answers.menu === 'add a department') {
-        inquirer.prompt(department).then(
-          async answers => {
-            await fs.appendFile('db/departmentSeed.sql', addDepartment(answers), err => err ? console.log(err) : console.log('Added Department'));
+        inquirer.prompt([
+          {
+            type: 'input',
+            message: 'What is the name of you deparment?',
+            name: 'dep'
+          }
+        ]).then(
+          answers => {
+            db.query('INSERT INTO department (name) VALUES (?)', [answers.dep], function (err, results) {
+              console.table(results);
+            })
             init();
           }
         )
       } else if (answers.menu === 'add a role') {
-        db.query('SELECT id AS value, title AS name FROM department', function (err, results) {
+        db.query('SELECT id AS value, name FROM department', function (err, results) {
           inquirer.prompt([
             {
               type: 'input',
@@ -81,11 +82,12 @@ function init() {
               name: 'department'
             }
           ]).then(
-             answers => {
-              db.query('INSERT INTO role (title, salary, department) VALUES (?, ?, ?)'[answers.role, answers.salary, answers.department], function (err, results) {
+            answers => {
+              db.query('INSERT INTO role (title, salary, department) VALUES (?, ?, ?)', [answers.role, answers.salary, answers.department], function (err, results) {
                 console.table(results);
+
                 init();
-              })
+              })  
             })
         })
 
@@ -109,13 +111,31 @@ function init() {
               name: 'role'
             }
           ]).then(
-             answers => {
+            answers => {
 
               db.query('INSERT INTO employee (first_name, last_name, role_id) VALUES (?, ?, ?)', [answers.first, answers.last, answers.role], function (err, results) {
                 console.table(results)
                 init();
               })
             })
+        })
+      } else if (answers.menu === 'update an employee role') {
+        db.query('SELECT employee.id, employee.first_name, employee.last_name FROM employee JOIN role ON employee.role_id = role.id', function (err, results) {
+          inquirer.prompt([
+            {
+              type: 'list',
+              choices: results,
+              message: 'Which employee gets a role change today?',
+              name: 'update'
+            }
+          ]).then(
+
+            answers => {
+              if (answers) {
+                console.log(answers)
+              }
+            }
+          )
         })
       } else {
         exit();
