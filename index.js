@@ -1,8 +1,4 @@
 const inquirer = require('inquirer');
-/* const fs = require('fs');
-const addDepartment = require('./utils/addDepartment.js');
-const addRole = require('./utils/addRole.js');
-const addEmployee = require('./utils/addEmployee.js'); */
 const mysql = require('mysql2');
 
 
