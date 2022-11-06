@@ -134,7 +134,7 @@ function init() {
                 value: role.id,
               };
             })
-          });
+        
 
           inquirer.prompt([
             {
@@ -151,7 +151,7 @@ function init() {
             },
           ])
           .then((answers) => {
-           db.query('UPDATE employee SET ? WHERE ?'),
+           db.query('UPDATE employee SET ? WHERE ?',
            [
             {
               role_id: answers.updateRole,
@@ -159,21 +159,18 @@ function init() {
             {
               id: answers.update,
             },
-           ]
+           ])
+           init();
             }
           )
-        })
+        });
+      });
       } else {
-        exit();
+       process.exit(0);
       };
     }
 
   )
-}
-
-// Exit the inquirer prompt
-function exit() {
-  prompt.ui.close();
 }
 
 
